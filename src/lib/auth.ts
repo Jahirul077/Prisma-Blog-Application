@@ -43,6 +43,7 @@ export const auth: any = betterAuth({
   },
   emailVerification: {
     sendOnSignUp: true,
+    autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
         const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
@@ -107,6 +108,14 @@ export const auth: any = betterAuth({
         console.error("Error sending email:", error);
         throw error;
       }
+    },
+  },
+  socialProviders: {
+    google: {
+      accessType: "offline",
+      prompt: "select_account consent",
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
 });
