@@ -1,6 +1,7 @@
 import type { PostWhereInput } from "@/generated/prisma/models";
 import type { Post } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import { boolean } from "better-auth";
 
 const createPost = async (
   data: Omit<Post, "id" | "createdAt" | "updatedAt" | "authorId">,
@@ -17,11 +18,14 @@ const createPost = async (
 const getAllPost = async (payload: {
   search?: string | undefined;
   tags?: string[] | [];
+  isFeatured?: boolean;
 }) => {
-  const { search, tags } = payload;
+  const { search, tags, isFeatured } = payload;
 
   const andCondition: PostWhereInput[] = [];
 
+
+  //search------------------------
   if (search) {
     andCondition.push({
       OR: [
@@ -46,11 +50,20 @@ const getAllPost = async (payload: {
     });
   }
 
+  //tags---------------
   if (tags && tags.length > 0) {
     andCondition.push({
       tags: {
         hasEvery: tags as string[],
       },
+    });
+  }
+
+
+  //isFeatured---------------
+  if( typeof isFeatured == "boolean"){
+    andCondition.push({
+      isFeatured: isFeatured,
     });
   }
 
