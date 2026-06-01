@@ -3,7 +3,6 @@ import type { Request, Response } from "express";
 
 const createPost = async (req: Request, res: Response) => {
   try {
-
     const user = req.user;
     if (!user) {
       return res.status(400).json({
@@ -25,6 +24,20 @@ const createPost = async (req: Request, res: Response) => {
   }
 };
 
+const getAllPost = async (req: Request, res: Response) => {
+  try {
+    const result = await PostService.getAllPost();
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "post creation failed",
+      details: error,
+    });
+  }
+};
+
 export const PostController = {
   createPost,
+  getAllPost,
 };
