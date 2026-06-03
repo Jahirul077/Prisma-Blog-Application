@@ -31,10 +31,10 @@ const getAllPost = async (req: Request, res: Response) => {
 
     const searchString = typeof search === "string" ? search : undefined;
 
-    // tags
+    // tags---------------------------------------
     const tags = req.query.tags ? (req.query.tags as string).split(",") : [];
 
-    // isFeatured
+    // isFeatured----------------------------------
     const isFeatured = req.query.isFeatured
       ? req.query.isFeatured === "true"
         ? true
@@ -43,17 +43,24 @@ const getAllPost = async (req: Request, res: Response) => {
           : undefined
       : undefined;
 
-    // STATUS
-
+    // STATUS-------------------------
     const status = req.query.status as PostStatus | undefined;
+
+    // authorId----------------------
     const authorId = req.query.authorId as string | undefined;
+
+    // pagination---------------------
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? 10);
 
     const result = await PostService.getAllPost({
       search: searchString,
       tags,
       isFeatured,
       status,
-      authorId
+      authorId,
+      page,
+      limit,
     });
     res.status(200).json(result);
   } catch (error: any) {
