@@ -21,8 +21,10 @@ const getAllPost = async (payload: {
   isFeatured?: boolean | undefined;
   status?: PostStatus | undefined;
   authorId?: string | undefined;
+  page: number;
+  limit: number;
 }) => {
-  const { search, tags, isFeatured, status, authorId } = payload;
+  const { search, tags, isFeatured, status, authorId, page, limit } = payload;
 
   const andCondition: PostWhereInput[] = [];
 
@@ -80,6 +82,9 @@ const getAllPost = async (payload: {
       authorId: authorId,
     });
   }
+
+  // pagination---------------------
+  
 
   const allPost = await prisma.post.findMany({
     where: {
