@@ -1,6 +1,7 @@
 import type { PostStatus } from "@/generated/prisma/enums";
 import { PostService } from "./post.service";
 import type { Request, Response } from "express";
+import paginationSortingHelper from "@/helpers/Paginationsortinghelper";
 
 const createPost = async (req: Request, res: Response) => {
   try {
@@ -27,6 +28,7 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPost = async (req: Request, res: Response) => {
   try {
+    // search------------------------
     const { search } = req.query;
 
     const searchString = typeof search === "string" ? search : undefined;
@@ -49,9 +51,9 @@ const getAllPost = async (req: Request, res: Response) => {
     // authorId----------------------
     const authorId = req.query.authorId as string | undefined;
 
-    // pagination---------------------
-    const page = Number(req.query.page ?? 1);
-    const limit = Number(req.query.limit ?? 10);
+    const options = paginationSortingHelper(req.query);
+
+    const { page, limit, skip, sortBy, sortOrder } = options;
 
     const result = await PostService.getAllPost({
       search: searchString,
@@ -61,6 +63,9 @@ const getAllPost = async (req: Request, res: Response) => {
       authorId,
       page,
       limit,
+      skip,
+      sortBy,
+      sortOrder,
     });
     res.status(200).json(result);
   } catch (error: any) {
@@ -72,7 +77,31 @@ const getAllPost = async (req: Request, res: Response) => {
   }
 };
 
+const getPostById = async (req: Request, res: Response) => {
+  try {
+    const { postId } = req.params;
+
+    if (!postId || typeof postId !== "string") {
+      throw new Error("post id is required and must be a string");
+    }
+
+    const result = await PostService.getPostById(postId);
+    res.status(200).json({
+      success: true,
+      message: "Post retrieved successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve post",
+      details: error.message || error,
+    });
+  }
+};
+
 export const PostController = {
   createPost,
   getAllPost,
+  getPostById,
 };
