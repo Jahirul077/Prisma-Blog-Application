@@ -10,4 +10,6 @@ router.get("/", PostController.getAllPost);
 //create post
 router.post("/", auth(UserRole.USER), PostController.createPost);
 
+router.get("/:postId", PostController.getPostById);
+
 export const postRouter = router;
