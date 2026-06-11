@@ -25,6 +25,6 @@ const createComment = async (payload: {
   });
 };
 
-export const CommentSercive = {
+export const CommentService = {
   createComment,
 };
