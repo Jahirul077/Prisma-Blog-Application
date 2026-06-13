@@ -1,5 +1,9 @@
 import type { PostWhereInput } from "@/generated/prisma/models";
-import type { Post, PostStatus } from "../../../generated/prisma/client";
+import {
+  CommentStatus,
+  type Post,
+  type PostStatus,
+} from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { boolean } from "better-auth";
 
@@ -106,6 +110,13 @@ const getAllPost = async (payload: {
       AND: andCondition,
     },
     orderBy: { [sortBy]: sortOrder },
+    include: {
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    },
   });
 
   const total = await prisma.post.count({
@@ -146,9 +157,35 @@ const getPostById = async (postId: string) => {
         comments: {
           where: {
             parentId: null,
+            status: CommentStatus.APPROVED,
+          },
+          orderBy: {
+            createdAt: "desc",
           },
           include: {
-            replies: true,
+            replies: {
+              where: {
+                status: CommentStatus.APPROVED,
+              },
+              orderBy: {
+                createdAt: "asc",
+              },
+              include: {
+                replies: {
+                  where: {
+                    status: CommentStatus.APPROVED,
+                  },
+                  orderBy: {
+                    createdAt: "asc",
+                  },
+                },
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
           },
         },
       },
