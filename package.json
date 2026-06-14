@@ -10,7 +10,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
-    "seed:admin": "npx tsx src/scripts/seedAdmin.ts"
+    "seed:admin": "npx tsx src/scripts/seedAdmin.ts",
+    "build": "prisma generate && tsc",
+    "start": "node dist/src/server.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
