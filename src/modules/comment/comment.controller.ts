@@ -19,6 +19,83 @@ const createComment = async (req: Request, res: Response) => {
   }
 };
 
+const getCommentById = async (req: Request, res: Response) => {
+  try {
+    const { commentId } = req.params;
+    const result = await CommentService.getCommentById(commentId as string);
+    res.status(200).json({
+      success: true,
+      message: "Comment fetched successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      error: "comment fetched failed",
+      details: error.message,
+    });
+  }
+};
+
+const getCommentsByAuthorId = async (req: Request, res: Response) => {
+  try {
+    const { authorId } = req.params;
+    const result = await CommentService.getCommentsByAuthorId(
+      authorId as string,
+    );
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "comment fetched by author failed",
+      details: error.message,
+    });
+  }
+};
+
+const deleteComment = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+    const { commentId } = req.params;
+    const result = await CommentService.deleteComment(
+      commentId as string,
+      user?.id as string,
+    );
+    res.status(200).json({
+      success: true,
+      message: "Comment deleted successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      error: "comment delete failed",
+      details: error.message,
+    });
+  }
+};
+
+const updateComment = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+    const { commentId } = req.params;
+
+    const result = await CommentService.updateComment(
+      commentId as string,
+      req.body,
+      user?.id as string,
+    );
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "comment update failed",
+      details: error.message,
+    });
+  }
+};
+
 export const CommentController = {
   createComment,
+  getCommentById,
+  getCommentsByAuthorId,
+  deleteComment,
+  updateComment,
 };
