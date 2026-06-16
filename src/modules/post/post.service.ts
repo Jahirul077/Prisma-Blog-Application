@@ -1,11 +1,12 @@
 import type { PostWhereInput } from "@/generated/prisma/models";
 import {
   CommentStatus,
+  PostStatus,
   type Post,
-  type PostStatus,
 } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { boolean } from "better-auth";
+import { UserRole } from "@/middlewares/auth";
 
 const createPost = async (
   data: Omit<Post, "id" | "createdAt" | "updatedAt" | "authorId">,
@@ -292,6 +293,86 @@ const deletePost = async (
   });
 };
 
+// get stats for dashboard
+const getStats = async () => {
+  //postCount, publishedPosts, draftPosts, totalViews, totalComments, totalUser, adminCount, userCount
+  return prisma.$transaction(async (tx) => {
+    const [
+      postCount,
+      publishedPosts,
+      draftPosts,
+      archivedPosts,
+      totalComments,
+      approvedComments,
+      totalUser,
+      adminCount,
+      userCount,
+      totalViews,
+    ] = await Promise.all([
+      await tx.post.count(),
+
+      await tx.post.count({
+        where: {
+          status: PostStatus.PUBLISHED,
+        },
+      }),
+
+      await tx.post.count({
+        where: {
+          status: PostStatus.DRAFT,
+        },
+      }),
+
+      await tx.post.count({
+        where: {
+          status: PostStatus.ARCHIVED,
+        },
+      }),
+
+      await tx.comment.count(),
+
+      await tx.comment.count({
+        where: {
+          status: CommentStatus.APPROVED,
+        },
+      }),
+
+      await tx.user.count(),
+
+      await tx.user.count({
+        where: {
+          role: UserRole.ADMIN,
+        },
+      }),
+
+      await tx.user.count({
+        where: {
+          role: UserRole.USER,
+        },
+      }),
+
+      await tx.post.aggregate({
+        _sum: {
+          views: true,
+        },
+      })
+    ]);
+
+    return {
+      postCount,
+      publishedPosts,
+      draftPosts,
+      archivedPosts,
+      totalComments,
+      approvedComments,
+      totalUser,
+      adminCount,
+      userCount,
+      totalViews:totalViews._sum.views
+    };
+  });
+};
+
 export const PostService = {
   createPost,
   getAllPost,
@@ -299,4 +380,5 @@ export const PostService = {
   getMyPosts,
   updatePost,
   deletePost,
+  getStats,
 };

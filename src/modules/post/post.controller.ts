@@ -120,8 +120,6 @@ const getMyPosts = async (req: Request, res: Response) => {
   }
 };
 
-
-
 const updatePost = async (req: Request, res: Response) => {
   try {
     const user = req.user;
@@ -136,7 +134,7 @@ const updatePost = async (req: Request, res: Response) => {
       postId as string,
       req.body,
       user.id as string,
-      isAdmin as boolean
+      isAdmin as boolean,
     );
     res.status(200).json(result);
   } catch (error: any) {
@@ -147,8 +145,6 @@ const updatePost = async (req: Request, res: Response) => {
     });
   }
 };
-
-
 
 const deletePost = async (req: Request, res: Response) => {
   try {
@@ -163,13 +159,26 @@ const deletePost = async (req: Request, res: Response) => {
     const result = await PostService.deletePost(
       postId as string,
       user.id as string,
-      isAdmin as boolean
+      isAdmin as boolean,
     );
     res.status(200).json(result);
   } catch (error: any) {
     res.status(400).json({
       success: false,
       message: "Failed to delete post",
+      details: error.message || error,
+    });
+  }
+};
+
+const getStats = async (req: Request, res: Response) => {
+  try {
+    const result = await PostService.getStats();
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to get stats",
       details: error.message || error,
     });
   }
@@ -182,4 +191,5 @@ export const PostController = {
   getMyPosts,
   updatePost,
   deletePost,
+  getStats,
 };
