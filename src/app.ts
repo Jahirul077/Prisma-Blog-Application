@@ -6,6 +6,7 @@ import cors from "cors";
 import { commentRouter } from "./modules/comment/comment.router";
 import globalErrorHandler from "./middlewares/globalErrorhandler";
 import { notFound } from "./middlewares/notFound";
+import { UserRouter } from "./modules/user/user.router";
 
 const app: Application = express();
 
@@ -20,8 +21,9 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
 
-app.use("/posts", postRouter);
+app.use("/users", UserRouter);
 
+app.use("/posts", postRouter);
 
 app.use("/comments", commentRouter);
 
@@ -29,8 +31,7 @@ app.get("/", (req, res) => {
   res.send("Hello World from Prisma Blog Application");
 });
 
-app.use(notFound)
-app.use(globalErrorHandler)
-
+app.use(notFound);
+app.use(globalErrorHandler);
 
 export default app;
