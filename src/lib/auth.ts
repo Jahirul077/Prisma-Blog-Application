@@ -36,17 +36,19 @@ export const auth: any = betterAuth({
       },
     },
   },
+  //-----
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
     requireEmailVerification: true,
   },
+  // -----
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
+        const verificationUrl = `${process.env.APP_URL}/auth/verify-email?token=${token}`;
 
         const info = await transporter.sendMail({
           from: '"Prisma Blog" <prisma@example.com>',
@@ -86,15 +88,7 @@ export const auth: any = betterAuth({
             </a>
           </div>
 
-          <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
-            If the button doesn't work, copy and paste this link into your browser:
-          </p>
-
-          <p style="word-break: break-all; font-size: 14px; color: #2563eb;">
-            ${verificationUrl}
-          </p>
-
-          <p style="color: #9ca3af; font-size: 13px; margin-top: 30px;">
+          <p style="color: #9ca3af; font-size: 13px; margin-top: 30px; text-align: center;">
             If you did not create an account, you can safely ignore this email.
           </p>
         </div>
@@ -110,6 +104,7 @@ export const auth: any = betterAuth({
       }
     },
   },
+  // -----
   socialProviders: {
     google: {
       accessType: "offline",
